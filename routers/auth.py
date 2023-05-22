@@ -14,13 +14,16 @@ import os
 
 load_dotenv()
 
-router = APIRouter()
+router = APIRouter(
+    prefix='/auth',
+    tags=['auth']
+)
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 ALGORITHM = os.getenv('ALGORITHM')
 
 bcrypt_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
-oauth2_bearer = OAuth2PasswordBearer(tokenUrl='token')
+oauth2_bearer = OAuth2PasswordBearer(tokenUrl='auth/token')
 
 def get_db():
     db = SessionLocal()
@@ -51,7 +54,7 @@ def authenticate_user(username: str, password: str, db):
         return False
     return user
 
-@router.post("/auth", status_code=status.HTTP_201_CREATED)
+@router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_user(db: db_dependency,
                     create_user_request: CreateUserRequest):
     create_user_model = Users(
